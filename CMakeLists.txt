@@ -14,6 +14,7 @@ find_package(ament_cmake_auto REQUIRED)
 ament_auto_find_build_dependencies()
 
 ament_auto_add_executable(emcl2_node
+    src/TimeCounter.cpp
   src/Mcl.cpp
   src/ExpResetMcl2.cpp
   src/Particle.cpp
