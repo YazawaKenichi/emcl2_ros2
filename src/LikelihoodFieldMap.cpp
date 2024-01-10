@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "emcl2/LikelihoodFieldMap.h"
+#include "emcl2/TimeCounter.hpp"
 
 #include "emcl2/Pose.h"
 

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
 #include "emcl2/Scan.h"
+#include "emcl2/TimeCounter.hpp"
 
 #include <cmath>
 

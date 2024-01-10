@@ -130,6 +130,56 @@ void ExpResetMcl2::sensorUpdate(double lidar_x, double lidar_y, double lidar_t, 
 ## Mcl::resampling
 ## Mcl::resetWeight
 
+# amcl
+## alpha の計算？
+amcl では alpha が7つ用意されている？
+`alpha1`, `alpha2`, `alpha3`, `alpha4`, `alpha5`, `alpha_slow`, `alpha_fast`
+これらの変数が見られるのは `amcl_node.cpp` `motion_model/differential_motion_model.cpp`, `motion_model/omni_motion_model.cpp`, `pf/pf.c`
+
+`amcl_node.cpp`
+```
+rcl_interfaces::msg::SetParametersResult AmclNode::dynamicParametersCallback(std::vector<rclcpp::Parameter> parameters)
+{
+    ~~~
+    //! パラメータの取得
+    for( ~~~ )
+    {
+        ~~~
+        if( ~~~ )
+        {
+            if( ~~~ )
+            {
+                alpha1_ = parameter.as_double();
+            }
+            else if( ~~~ )
+            {
+                alpha2_ = parameter.as_double();
+            }
+            ...
+        }
+    }
+}
+```
+
+```
+AmclNode::on_configure(const rclcpp_lifecycle::State &)
+{
+    callback_group_ = create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive, false);
+    initParameters();
+    initTransforms();
+    initParticleFilter();
+    initLaserScan();
+    initMessageFilters();
+    initPubSub();
+    initServices();
+    initOdometry();
+    executor_ = std::make_shared<rclcpp::executors::SingleThreadedExecutor>();
+    executor_->add_callback_group(callback_group_, get_node_base_interface());
+    executor_thread_ = std::make_unique<nav2_util::NodeThread>(executor_);
+    return nav2_util::CallbackReturn::SUCCESS;
+}
+```
+
 # 結果
 ## `pf_`
 `emcl2_node.h`
@@ -145,6 +195,7 @@ namespace emcl2
 ```
 
 ## amcl と emcl2 共通の処理
+### emcl2
 - ExpResetMcl2::nonPenetrationRate
     alpha の計算をしている関数
 - Mcl::motionUpdate
@@ -153,4 +204,14 @@ namespace emcl2
     パーティクルの中心 (平均) を求めてるのかな？
 - Mcl::resampling
     リサンプリング
+
+
+# 時間計測プログラム
+## 使い方
+``` C++
+#include "emcl2/TimeCounter.hpp"
+auto timecounter = TimeCounter::TimeCounter(path, node_name_);
+timecounter.startCounter();
+timecounter.stopCounter();
+```
 

@@ -4,9 +4,10 @@ using namespace std;
 
 namespace TimeCounter
 {
-    TimeCounter::TimeCounter(string _path) : start(0), stop(0)
+    TimeCounter::TimeCounter(string _path, string _node) : start(0), stop(0)
     {
         this->path = _path;
+        this->node = _node;
     }
 
     //! 計測開始
@@ -39,9 +40,10 @@ namespace TimeCounter
         file.open(this->path, std::ios_base::app);
         if (file.is_open())
         {
-            string text = _text + "\r\n";
-            this->printf(text);
-            file.write(text.data(), text.size());
+            string print = "[" + this->node + "] " + _text;
+            string note = _text + "\r\n";
+            this->printf(print);
+            file.write(note.data(), note.size());
         }
     }
 }

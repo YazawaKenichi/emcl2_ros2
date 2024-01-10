@@ -231,11 +231,16 @@ namespace emcl2
         }
         else if (simple_reset_request_)
         {
+            auto timecounter = TimeCounter::TimeCounter("./EMcl2Node::loop{pf_.simpleReset}", "EMcl2Node::loop{pf_.simpleReset");
+            timecounter.startCounter();
             pf_->simpleReset();
             simple_reset_request_ = false;
+            timecounter.stopCounter();
         }
         if (init_pf_)
         {
+            auto timecounter = TimeCounter::TimeCounter("./EMcl2Node::loop{motionUpdate, sensorUpdate, meanPose, publish}", "EMcl2Node::loop{motionUpdate, sensorUpdate, meanPose, pulish}");
+            timecounter.startCounter();
             double x, y, t;
             if (!getOdomPose(x, y, t))
             {
@@ -259,6 +264,7 @@ namespace emcl2
             std_msgs::msg::Float32 alpha_msg;
             alpha_msg.data = static_cast<float>(pf_->alpha_);
             alpha_pub_->publish(alpha_msg);
+            timecounter.stopCounter();
         }
         else
         {

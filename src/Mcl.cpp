@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2022 Ryuichi Ueda ryuichiueda@gmail.com
 // SPDX-License-Identifier: LGPL-3.0-or-later
 #include "emcl2/Mcl.h"
+#include "emcl2/TimeCounter.hpp"
 
 #include <rclcpp/rclcpp.hpp>
 
@@ -46,6 +47,8 @@ Mcl::~Mcl()
 
 void Mcl::resampling(void)
 {
+    auto timecounter = TimeCounter::TimeCounter("./Mcl::resampling", "resampling");
+    timecounter.startCounter();
     std::vector<double> accum;
     accum.push_back(particles_[0].w_);
     for (size_t i = 1; i < particles_.size(); i++) {
@@ -74,6 +77,7 @@ void Mcl::resampling(void)
     for (size_t i = 0; i < particles_.size(); i++) {
         particles_[i] = old[chosen[i]];
     }
+    timecounter.stopCounter();
 }
 
 void Mcl::sensorUpdate(double lidar_x, double lidar_y, double lidar_t, bool inv)
@@ -127,6 +131,8 @@ void Mcl::sensorUpdate(double lidar_x, double lidar_y, double lidar_t, bool inv)
 
 void Mcl::motionUpdate(double x, double y, double t)
 {
+    auto timecounter = TimeCounter::TimeCounter("./Mcl::motionUpdate", "motionUpdate");
+    timecounter.startCounter();
     //! OdomPose(&x, &y, &t)
     if (last_odom_ == NULL) {
         last_odom_ = new Pose(x, y, t);
@@ -153,6 +159,7 @@ void Mcl::motionUpdate(double x, double y, double t)
     }
 
     prev_odom_->set(*last_odom_);
+    timecounter.stopCounter();
 }
 
 void Mcl::meanPose(

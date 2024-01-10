@@ -63,8 +63,11 @@ void ExpResetMcl2::sensorUpdate(double lidar_x, double lidar_y, double lidar_t, 
 
     //! alpha の計算
     //! non-penetration rate : [名詞] 不浸透率
+    auto timecounter = TimeCounter::TimeCounter("./ExpResetMcl2::nonPenetrationRate", "ExpResetMcl2");
+    timecounter.startCounter();
     alpha_ = nonPenetrationRate(static_cast<int>(particles_.size() * extraction_rate_), map_.get(), scan);
-    RCLCPP_INFO(rclcpp::get_logger("emcl2_node"), "ALPHA: %f / %f", alpha_, alpha_threshold_);
+    timecounter.stopCounter();
+    // RCLCPP_INFO(rclcpp::get_logger("emcl2_node"), "ALPHA: %f / %f", alpha_, alpha_threshold_);
     if (alpha_ < alpha_threshold_) {
         RCLCPP_INFO(rclcpp::get_logger("emcl2_node"), "RESET");
         //! 実際に膨張リセットを行う
@@ -97,7 +100,7 @@ double ExpResetMcl2::nonPenetrationRate(int skip, LikelihoodFieldMap * map, Scan
     }
     shift++;
 
-    std::cout << penetrating << " " << counter << std::endl;
+    // std::cout << penetrating << " " << counter << std::endl;
     //! alpha の計算
     return static_cast<double>((counter - penetrating)) / counter;
 }
@@ -105,7 +108,7 @@ double ExpResetMcl2::nonPenetrationRate(int skip, LikelihoodFieldMap * map, Scan
 //! 膨張リセット
 void ExpResetMcl2::expansionReset(void)
 {
-    auto tc = TimeCounter::TimeCounter("ExpResetMcl2::expansionReset");
+    auto tc = TimeCounter::TimeCounter("./expansionReset::expansionReset", "expansionReset");
     tc.startCounter();
     for (auto & p : particles_)
     {
